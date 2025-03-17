@@ -1,18 +1,54 @@
-package com.example.migo.ui
 
+package com.example.migo.ui
+import Pantalla1
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.migo.ChatViewModel
-import com.example.migo.ui.theme.MigoTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
+import com.example.migo.ChatViewModel
+import com.example.migo.Pantalla2
+import com.example.migo.ui.theme.MigoTheme
+import com.google.firebase.auth.FirebaseAuth
+
+
+class MainActivity : ComponentActivity() {
+    private val chatViewModel: ChatViewModel by viewModels() // Obtiene el ViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val navController = rememberNavController()
+
+            NavHost(navController, startDestination = "bienvenido") { // Inicia siempre en "bienvenido"
+                composable(route = "bienvenido") {
+                    Pantalla1 {
+                        navController.navigate("Patantalla2") // Navega a Pantalla2
+                    }
+                }
+                composable(route = "Patantalla2") {
+                    Pantalla2(navigateToNextScreen = {
+                        navController.navigate("chat") // Ahora lleva al ChatScreen
+                    })
+                }
+                composable(route = "chat") {
+                    ChatScreen(viewModel = chatViewModel) // Muestra ChatScreen
+                }
+            }
+        }
+    }
+
+}
+
+
+
+
+
+/*Pantalla principal  con login */
+/*
 class MainActivity : ComponentActivity() {
     private val chatViewModel: ChatViewModel by viewModels()
 
@@ -20,55 +56,70 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MigoTheme {
-                ChatScreen(chatViewModel)
+
+                val navController = rememberNavController()
+                val auth = FirebaseAuth.getInstance()
+                val isUserLoggedIn = auth.currentUser != null
+
+                NavHost(
+                    navController = navController,
+                    startDestination = "login" // Se asegura que siempre inicie en Login
+                ) {
+                    composable("login") {
+                        LoginScreen(navController = navController, onLoginSuccess = {
+                            navController.navigate("chat") {
+                                popUpTo("login") { inclusive = true } // Eliminamos la pantalla de login del stack
+                            }
+                        })
+                    }
+                    /*Pantalla para registrar */
+                    composable("register") {
+                        RegisterScreen(navController = navController) // Agrega la pantalla de registro
+                    }
+                    /*Pantalla de chat*/
+                    composable("chat") { ChatScreen(chatViewModel) }
+                }
+
             }
         }
     }
 }
+*/
 
-@Composable
-fun ChatScreen(viewModel: ChatViewModel) {
-    var userInput by remember { mutableStateOf("") }
-    val chatResponse by viewModel.chatResponse.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        OutlinedTextField(
-            value = userInput,
-            onValueChange = { userInput = it },
-            label = { Text("Escribe tu mensaje") },
-            modifier = Modifier.fillMaxWidth()
-        )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
-        Button(
-            onClick = {
-                if (userInput.isNotBlank()) {
-                    viewModel.sendMessageToApi(userInput)  // Se usa el nombre corregido
-                    userInput = ""
+
+
+/*Pantalla principal  con login  Solo es copia en caso de que falle*/
+/*
+class MainActivity : ComponentActivity() {
+    private val chatViewModel: ChatViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MigoTheme {
+                val navController = rememberNavController()
+                val auth = FirebaseAuth.getInstance()
+                val isUserLoggedIn = auth.currentUser != null
+
+                NavHost(
+                    navController = navController,
+                    startDestination = "login" // Se asegura que siempre inicie en Login
+                ) {
+                    composable("login") {
+                        LoginScreen(navController = navController, onLoginSuccess = {
+                            navController.navigate("chat") {
+                                popUpTo("login") { inclusive = true } // Eliminamos la pantalla de login del stack
+                            }
+                        })
+                    }
+
+                    composable("chat") { ChatScreen(chatViewModel) }
                 }
-            },
-            enabled = !isLoading,
-            modifier = Modifier.padding(8.dp)  // Se añade padding para mejor apariencia
-        ) {
-            Text(if (isLoading) "Enviando..." else "Enviar")
-        }
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (isLoading) {
-            Text("Esperando respuesta...", color = androidx.compose.ui.graphics.Color.Gray)
-        } else if (errorMessage.isNotEmpty()) {
-            Text("Error: $errorMessage", color = androidx.compose.ui.graphics.Color.Red)
-        } else if (chatResponse.isNotEmpty()) {
-            Text("Respuesta: $chatResponse")
+            }
         }
     }
 }
+*/

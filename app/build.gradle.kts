@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
+    implementation(libs.androidx.navigation.compose)
 
     // Dependencias para pruebas (JUnit y Espresso)
     testImplementation(libs.junit)
@@ -70,6 +71,18 @@ dependencies {
 
     // Corrutinas para manejar llamadas asíncronas sin bloquear la UI
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    //Icons.Filled.Mic
+    implementation("androidx.compose.material:material-icons-extended:1.4.3")
+
+
+    //login firebase
+    implementation("com.google.firebase:firebase-auth-ktx:22.1.2")
+    implementation("com.google.android.gms:play-services-auth:20.7.0") // Para login con Google
+    //dependencia json firebase del proyecto
+
+
+
 
 
 }
+apply(plugin = "com.google.gms.google-services")
