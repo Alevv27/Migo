@@ -1,6 +1,5 @@
+package com.example.migo
 
-package com.example.migo.ui
-import Pantalla1
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,12 +7,9 @@ import androidx.activity.viewModels
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
-import com.example.migo.ChatViewModel
-import com.example.migo.Pantalla2
+import com.example.migo.ui.ChatScreen
+import com.example.migo.ui.SplashScreen
 import com.example.migo.ui.theme.MigoTheme
-import com.google.firebase.auth.FirebaseAuth
-
 
 class MainActivity : ComponentActivity() {
     private val chatViewModel: ChatViewModel by viewModels() // Obtiene el ViewModel
@@ -21,26 +17,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
+            MigoTheme {
+                val navController = rememberNavController()
 
-            NavHost(navController, startDestination = "bienvenido") { // Inicia siempre en "bienvenido"
-                composable(route = "bienvenido") {
-                    Pantalla1 {
-                        navController.navigate("Patantalla2") // Navega a Pantalla2
+                NavHost(navController, startDestination = "splash") {
+                    // Pantalla Splash
+                    composable(route = "splash") {
+                        SplashScreen(navController = navController)
                     }
-                }
-                composable(route = "Patantalla2") {
-                    Pantalla2(navigateToNextScreen = {
-                        navController.navigate("chat") // Ahora lleva al ChatScreen
-                    })
-                }
-                composable(route = "chat") {
-                    ChatScreen(viewModel = chatViewModel) // Muestra ChatScreen
+
+                    // Pantalla de Chat (destino final)
+                    composable(route = "chat") {
+                        ChatScreen(viewModel = chatViewModel)
+                    }
                 }
             }
         }
     }
-
 }
 
 
