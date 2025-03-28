@@ -19,11 +19,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +48,7 @@ import java.util.Locale
  * @param onUserInputChange Función que se llama cuando cambia el texto ingresado.
  * @param onSendMessage Función que se llama para enviar el mensaje.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoiceInputField(
     userInput: String,
@@ -79,7 +82,7 @@ fun VoiceInputField(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, shape = RoundedCornerShape(50))
+            .background(Color.White, shape = RoundedCornerShape(50))//color de enviar audio y mensaje
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -99,7 +102,7 @@ fun VoiceInputField(
             Icon(
                 imageVector = Icons.Default.Mic,
                 contentDescription = "Grabar Audio",
-                tint = if (isListening) Color.Red else MaterialTheme.colorScheme.primary
+                tint = if (isListening) Color.Red else Color(0xFF0042FF)//color audio
             )
         }
 
@@ -113,8 +116,18 @@ fun VoiceInputField(
                 .padding(horizontal = 8.dp),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { onSendMessage() }),
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(20.dp),
+            textStyle = androidx.compose.ui.text.TextStyle(color = Color(0xFF000000)), // Aquí se cambia el color del texto
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+
+                cursorColor = Color(0xFF1E88E5), // Cursor azul
+                focusedBorderColor = Color(0xFFCDD4F0),  // Borde azul cuando está seleccionado
+                unfocusedBorderColor = Color(0xFF4E65CB) // Borde negro cuando no está seleccionado
+            )
         )
+
+
+
 
         // Botón para enviar el mensaje.
         IconButton(
@@ -124,7 +137,7 @@ fun VoiceInputField(
             Icon(
                 imageVector = Icons.Default.Send,
                 contentDescription = "Enviar Mensaje",
-                tint = MaterialTheme.colorScheme.primary
+                tint = Color(0xFF0042FF)//color de enviar mensaje
             )
         }
     }
